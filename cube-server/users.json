@@ -1,0 +1,38 @@
+[
+  {
+    "id": "000000001",
+    "nickname": "dfds",
+    "rolls": 3,
+    "balance": 28
+  },
+  {
+    "id": "000000002",
+    "nickname": "nothing",
+    "rolls": 8,
+    "balance": 9
+  },
+  {
+    "id": "000000003",
+    "nickname": "nothing1",
+    "rolls": 8,
+    "balance": 9
+  },
+  {
+    "id": "000000004",
+    "nickname": "nothing11",
+    "rolls": 6,
+    "balance": 15
+  },
+  {
+    "id": "000000005",
+    "nickname": "dsf",
+    "rolls": 9,
+    "balance": 1
+  },
+  {
+    "id": "000000006",
+    "nickname": "f",
+    "rolls": 9,
+    "balance": 4
+  }
+]

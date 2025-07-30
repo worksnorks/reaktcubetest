@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Мини-апп Кубик</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 10px;
+    }
+    .btn {
+      padding: 8px 12px;
+      margin: 5px 0;
+      cursor: pointer;
+    }
+    input.input {
+      padding: 6px;
+      width: 200px;
+      margin-right: 8px;
+    }
+    .card {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">Мини-апп Кубик</h1>
+
+    <div id="dice-container" style="text-align:center; margin-bottom: 20px;">
+      <video id="dice-video" width="200" height="200" autoplay muted loop playsinline></video>
+    </div>
+
+    <div id="register" class="card">
+      <h2>Регистрация</h2>
+      <input id="nickname" type="text" placeholder="Введите никнейм" class="input" />
+      <button id="registerBtn" class="btn">Зарегистрироваться</button>
+      <p id="registerMsg" class="message"></p>
+    </div>
+
+    <div id="game" class="card" style="display:none;">
+      <p>Ваш ID: <span id="userIdDisplay"></span></p>
+      <button id="rollBtn" class="btn">Бросить кубик</button>
+      <p>Результат: <span id="result">-</span></p>
+      <p>Осталось бросков: <span id="rollsLeft">-</span></p>
+      <p>Баланс монеток: <span id="balance">-</span></p>
+    </div>
+  </div>
+
+  <script>
+    const registerBtn = document.getElementById('registerBtn');
+    const rollBtn = document.getElementById('rollBtn');
+    const video = document.getElementById('dice-video');
+
+    let currentUserId = null;
+
+    const idleSrc = 'dice_animations/1-Idle_VP9.webm';
+    const toSpinSrc = 'dice_animations/2-ToSpin_VP9.webm';
+    const spinSrc = 'dice_animations/3-Spin_1_VP9.webm';
+    const rollSrcs = {
+      1: 'dice_animations/4-Roll_1_VP9.webm',
+      2: 'dice_animations/4-Roll_2_VP9.webm',
+      3: 'dice_animations/4-Roll_3_VP9.webm',
+      4: 'dice_animations/4-Roll_4_VP9.webm',
+      5: 'dice_animations/4-Roll_5_VP9.webm',
+      6: 'dice_animations/4-Roll_6_VP9.webm',
+    };
+    const toIdleSrcs = {
+      1: 'dice_animations/5-ToIdle_1_VP9.webm',
+      2: 'dice_animations/5-ToIdle_2_VP9.webm',
+      3: 'dice_animations/5-ToIdle_3_VP9.webm',
+      4: 'dice_animations/5-ToIdle_4_VP9.webm',
+      5: 'dice_animations/5-ToIdle_5_VP9.webm',
+      6: 'dice_animations/5-ToIdle_6_VP9.webm',
+    };
+
+    function playIdle() {
+      if (!video) return;
+      video.src = idleSrc;
+      video.loop = true;
+      video.play();
+    }
+
+    function playRollAnimation(roll, onRollComplete) {
+      video.loop = false;
+      video.src = toSpinSrc;
+      video.play();
+
+      setTimeout(() => {
+        video.src = spinSrc;
+        video.loop = true;
+        video.play();
+      }, 2000);
+
+      setTimeout(() => {
+        video.loop = false;
+        video.src = rollSrcs[roll];
+        video.play();
+      }, 3000);
+      setTimeout(() => {
+        onRollComplete();
+
+        video.src = toIdleSrcs[roll];
+        video.loop = false;
+        video.play();
+
+        video.onended = () => {
+          playIdle();
+          video.onended = null;
+        };
+      }, 7000);
+    }
+
+    window.onload = () => {
+      playIdle();
+    };
+
+    registerBtn.onclick = () => {
+      const nickname = document.getElementById('nickname').value.trim();
+      if (!nickname) {
+        document.getElementById('registerMsg').textContent = 'Введите никнейм';
+        return;
+      }
+      fetch('/user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nickname })
+      })
+      .then(res => {
+        if (res.status === 201) {
+          return res.json();
+        } else {
+          return res.text().then(text => { throw new Error(text) });
+        }
+      })
+      .then(data => {
+        document.getElementById('registerMsg').textContent = `Пользователь создан. Ваш ID: ${data.id}`;
+        currentUserId = data.id;
+        document.getElementById('userIdDisplay').textContent = currentUserId;
+        showGame();
+        updateUserData();
+      })
+      .catch(err => {
+        document.getElementById('registerMsg').textContent = `Ошибка: ${err.message}`;
+      });
+    };
+
+    rollBtn.onclick = () => {
+      if (!currentUserId) return;
+
+      rollBtn.disabled = true;
+
+      fetch('/roll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: currentUserId })
+      })
+      .then(res => {
+        if (!res.ok) {
+          return res.text().then(text => { throw new Error(text) });
+        }
+        return res.json();
+      })
+      .then(data => {
+        playRollAnimation(data.roll, () => {
+          document.getElementById('result').textContent = data.roll;
+          document.getElementById('rollsLeft').textContent = data.rollsLeft;
+          document.getElementById('balance').textContent = data.balance;
+        });
+      })
+      .catch(err => {
+        document.getElementById('result').textContent = err.message;
+      })
+      .finally(() => {
+        setTimeout(() => {
+          rollBtn.disabled = false;
+        }, 8000);
+      });
+    };
+
+    function showGame() {
+      document.getElementById('register').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
+    }
+
+    function updateUserData() {
+      fetch(`/user/${currentUserId}`)
+      .then(res => res.json())
+      .then(user => {
+        document.getElementById('rollsLeft').textContent = user.rolls;
+        document.getElementById('balance').textContent = user.balance;
+      });
+    }
+  </script>
+</body>
+</html>

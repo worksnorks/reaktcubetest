@@ -1,0 +1,99 @@
+{
+  "users": [
+    {
+      "id": "000000001",
+      "tg_id": "tg_12345",
+      "nickname": "UserOne",
+      "balance_coins": 100,
+      "balance_usdt": 5.0
+    },
+    {
+      "id": "000000002",
+      "tg_id": "tg_67890",
+      "nickname": "UserTwo",
+      "balance_coins": 250,
+      "balance_usdt": 12.5
+    }
+  ],
+
+  "promoCodes": [
+    {
+      "id": 1,
+      "code": "WELCOME10",
+      "active": true,
+      "reward": "10% скидка",
+      "user": "all"
+    },
+    {
+      "id": 2,
+      "code": "VIP50",
+      "active": false,
+      "reward": "50 монеток",
+      "user": "000000002"
+    }
+  ],
+
+  "items": [
+    {
+      "id": 1,
+      "category": "Genshin",
+      "name": "Sword of Dawn",
+      "price": 100,
+      "visible": true,
+      "stats": {
+        "purchased": 10,
+        "fromCases": 5
+      }
+    },
+    {
+      "id": 2,
+      "category": "HSR",
+      "name": "Plasma Core",
+      "price": 250,
+      "visible": true,
+      "stats": {
+        "purchased": 3,
+        "fromCases": 2
+      }
+    }
+  ],
+
+  "partners": [
+    {
+      "id": "partner1",
+      "referralLink": "https://ref.example.com/partner1",
+      "commissionPercent": 10,
+      "stats": {
+        "referralsTotal": 50,
+        "referralsThisMonth": 5,
+        "paymentsTotal": 100.0,
+        "paymentsThisMonth": 10.0
+      }
+    }
+  ],
+
+  "adminAuditLogs": [
+    {
+      "id": 1,
+      "adminId": "admin123",
+      "action": "Удалил пользователя 000000002",
+      "timestamp": "2025-07-29T12:00:00Z"
+    },
+    {
+      "id": 2,
+      "adminId": "admin456",
+      "action": "Создал промокод VIP50",
+      "timestamp": "2025-07-28T09:15:00Z"
+    }
+  ],
+
+  "cubeStatus": {
+    "active": true,
+    "errorLogs": [
+      {
+        "timestamp": "2025-07-29T10:00:00Z",
+        "message": "Ошибка подключения к базе"
+      }
+    ]
+  }
+}
