@@ -1,0 +1,68 @@
+import React, { useState } from 'react';
+
+export default function InfoPage() {
+  const infoItems = [
+    {
+      id: 1,
+      title: 'Что за кубик',
+      description: 'Лучший кубик на свете',
+    },
+    {
+      id: 2,
+      title: 'Как играть',
+      description: 'Бросай кубик и выигрывай монеты.',
+    },
+    {
+      id: 3,
+      title: 'Контакты поддержки',
+      description: 'Пиши нам на support@example.com',
+    },
+  ];
+
+  const [openId, setOpenId] = useState(null);
+
+  const toggle = (id) => {
+    setOpenId(openId === id ? null : id);
+  };
+
+  return (
+    <div style={{ maxWidth: 400, margin: '20px auto', fontFamily: 'Arial, sans-serif' }}>
+      <h1>Информация</h1>
+      {infoItems.map(({ id, title, description }) => (
+        <div key={id} style={{ marginBottom: 10 }}>
+          <div
+            onClick={() => toggle(id)}
+            style={{
+              cursor: 'pointer',
+              backgroundColor: '#1976d2',
+              color: '#fff',
+              padding: '10px 15px',
+              borderRadius: 8,
+              userSelect: 'none',
+              fontWeight: '600',
+            }}
+            tabIndex={0}
+            role="button"
+            onKeyDown={(e) => { if (e.key === 'Enter') toggle(id); }}
+          >
+            {title}
+          </div>
+          {openId === id && (
+            <div
+              style={{
+                padding: '10px 15px',
+                backgroundColor: '#f0f4fb',
+                borderRadius: '0 0 8px 8px',
+                border: '1px solid #1976d2',
+                borderTop: 'none',
+                userSelect: 'text',
+              }}
+            >
+              {description}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}

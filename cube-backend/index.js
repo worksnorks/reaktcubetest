@@ -9,7 +9,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // --- Временное хранилище данных ---
-let cubeStatus = { active: false };
+let cubeStatus = { active: true };
 let users = [];
 let logs = [];
 
